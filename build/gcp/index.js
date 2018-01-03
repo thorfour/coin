@@ -1,4 +1,4 @@
-var DEBUG = true
+var DEBUG = false
 var executable = "./coin";
 var cp = require("child_process");
 var request = require('request')
