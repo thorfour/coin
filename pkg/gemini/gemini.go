@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"sync"
 )
 
 const (
@@ -13,11 +14,37 @@ const (
 	ethusd = "ethusd"
 )
 
-// Get returns a BTCUSD quote
-func Get() (*Quote, error) {
+// Get returns a BTCUSD & ETHUSD quote
+func Get() (map[string]*Quote, error) {
+
+	var err error
+	wg := new(sync.WaitGroup)
+	wg.Add(2)
 
 	// Get BTCUSD quote
-	resp, err := http.Get(fmt.Sprintf("%s%s", api, btcusd))
+	var btcquote *Quote
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		btcquote, err = GetSymbol(btcusd)
+	}(wg)
+	// Get ETHUSD quote
+	var ethquote *Quote
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		ethquote, err = GetSymbol(ethusd)
+	}(wg)
+
+	wg.Wait()
+
+	return map[string]*Quote{
+		btcusd: btcquote,
+		ethusd: ethquote,
+	}, err
+}
+
+// GetSymbol returns a quote for the given symbol
+func GetSymbol(symbol string) (*Quote, error) {
+	resp, err := http.Get(fmt.Sprintf("%s%s", api, symbol))
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/url"
 
 	"github.com/thorfour/coin/pkg/gemini"
@@ -13,5 +14,10 @@ func Handler(_ url.Values) (string, error) {
 		return "", err
 	}
 
-	return q.Last, nil
+	var resp string
+	for s, i := range q {
+		resp = fmt.Sprintf("%s:%s: %v\n", resp, s, i.Last)
+	}
+
+	return resp, nil
 }

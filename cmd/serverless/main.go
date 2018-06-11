@@ -14,5 +14,10 @@ func main() {
 		return
 	}
 
-	fmt.Println(q.Last)
+	var resp string
+	for s, t := range q {
+		resp = fmt.Sprintf("%s%s: %v\n", resp, s, t.Last)
+	}
+
+	fmt.Print(resp)
 }
