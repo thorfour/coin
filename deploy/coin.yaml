@@ -11,7 +11,7 @@ metadata:
   namespace: slack-apps
   name: coin-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /v1/coin
     certmanager.k8s.io/cluster-issuer: letsencrypt-prod
 spec:
   tls:
