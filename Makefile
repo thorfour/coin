@@ -1,4 +1,4 @@
-.PHONY: all clean gcp
+.PHONY: all clean gcp plugin
 
 EXECUTABLE='coin'
 ZIP='coin.zip'

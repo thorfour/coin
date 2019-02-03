@@ -12,6 +12,6 @@ func main() {
 	s := sillyputty.New("/v1",
 		sillyputty.HandlerOpt("/coin", coin.SillyPuttyHandler),
 	)
-	s.Port = 4343
+
 	s.Run()
 }
