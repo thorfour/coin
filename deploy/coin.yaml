@@ -16,16 +16,29 @@ metadata:
 spec:
   tls:
   - hosts:
-    - apps.thor-hansen.com
+    - appsbeta.thor-hansen.com
     secretName: coin-crt
   rules:
-  - host: apps.thor-hansen.com
+  - host: appsbeta.thor-hansen.com
     http:
       paths:
       - path: /v1/coin
         backend:
           serviceName: coin
-          servicePort: 80
+          servicePort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: coin
+  namespace: slack-apps
+spec:
+  selector:
+    app: coin
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 80
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -49,3 +62,22 @@ spec:
         image: quay.io/thorfour/coin:v1.0.0
         ports:
         - containerPort: 80
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: coin-crt
+  namespace: slack-apps
+spec:
+  secretName: coin-crt
+  dnsNames:
+  - appsbeta.thor-hansen.com
+  acme:
+    config:
+    - http01:
+        ingressClass: nginx
+      domains:
+      - appsbeta.thor-hansen.com
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
