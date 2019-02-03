@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: slack-apps
+  labels:
+    app.kubernetes.io/name: slack-apps
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  namespace: slack-apps
+  name: coin-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /v1/coin
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+  - hosts:
+    - appsbeta.thor-hansen.com
+    secretName: coin-crt
+  rules:
+  - host: appsbeta.thor-hansen.com
+    http:
+      paths:
+      - path: /v1/coin
+        backend:
+          serviceName: coin
+          servicePort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: coin
+  namespace: slack-apps
+spec:
+  selector:
+    app: coin
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: slack-apps
+  name: coin
+  labels:
+    app: coin
+spec: 
+  replicas: 1
+  selector:
+      matchLabels:
+        app: coin
+  template:
+    metadata:
+      labels:
+        app: coin
+    spec:
+      containers:
+      - name: coin
+        image: quay.io/thorfour/coin:v1.0.0
+        ports:
+        - containerPort: 80
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: coin-crt
+  namespace: slack-apps
+spec:
+  secretName: coin-crt
+  dnsNames:
+  - appsbeta.thor-hansen.com
+  acme:
+    config:
+    - http01:
+        ingressClass: nginx
+      domains:
+      - appsbeta.thor-hansen.com
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
