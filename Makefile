@@ -19,8 +19,8 @@ go = @docker run \
 
 go_cgo = @docker run \
         --rm \
-        -v ${PWD}:${PWD} \
-        -w ${PWD} \
+        -v ${PWD}:/go/src/github.com/thorfour/coin \
+        -w /go/src/github.com/thorfour/coin \
         -u $$(id -u) \
         -e XDG_CACHE_HOME=/tmp/.cache \
         -e CGO_ENABLED=1 \
