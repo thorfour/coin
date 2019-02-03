@@ -44,6 +44,7 @@ plugin:
 	$(go_cgo) build -buildmode=plugin -o ./bin/plugin/$(PLUG) ./cmd/plugin/
 
 docker: 
+	cp /etc/ssl/certs/ca-certificates.crt .
 	docker build -t quay.io/thorfour/coin .
 
 server:
@@ -52,3 +53,4 @@ server:
 
 clean:
 	rm -rf ./bin	
+	rm -f ca-certificates.crt

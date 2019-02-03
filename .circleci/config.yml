@@ -12,6 +12,7 @@ jobs:
         command: |
             mkdir -p ./bin/server
             go build -o ./bin/server/coin ./cmd/server
+            cp /etc/ssl/certs/ca-certificates.crt .
             docker build -t quay.io/thorfour/coin .
             echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin quay.io
             docker push quay.io/thorfour/coin
