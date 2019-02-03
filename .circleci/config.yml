@@ -1,0 +1,24 @@
+version: 2
+jobs: 
+  build:
+    working_directory: /go/src/github.com/thorfour/coin
+    docker:
+    - image: circleci/golang:1.11
+    steps:
+    - setup_remote_docker
+    - checkout
+    - run:
+        name: build
+        command: |
+            go build -o coin ./cmd/server
+            docker build -t quay.io/thorfour/coin .
+            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin quay.io
+            docker push quay.io/thorfour/coin
+workflows:
+  version: 2
+  post-merge:
+    jobs:
+    - build:
+        filters:
+          branches:
+            only: master
